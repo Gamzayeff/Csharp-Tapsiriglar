@@ -1,0 +1,363 @@
+using System;
+using System.Collections.Generic;
+
+
+public interface IBankEntity
+{
+    Guid Id { get; set; }
+    string FirstName { get; set; }
+    string LastName { get; set; }
+    int Age { get; set; }
+    string Position { get; set; }
+    decimal Salary { get; set; }
+}
+
+public class Customer : IBankEntity
+{
+    public Guid Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+    public string LiveAddress { get; set; }
+    public string WorkAddress { get; set; }
+    public string FullName { get; internal set; }
+    public object LoanBalance { get; internal set; }
+
+    public Customer(Guid id, string firstName, string lastName, int age, string position, decimal salary, string liveAddress, string workAddress)
+    {
+        Id = id;
+        FirstName = firstName;
+        LastName = lastName;
+        Age = age;
+        Position = position;
+        Salary = salary;
+        LiveAddress = liveAddress;
+        WorkAddress = workAddress;
+    }
+
+    internal void DeductLoan(decimal amount)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+
+
+
+public class ExecutiveDirector : IBankEntity
+{
+    public Guid Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+
+    
+    public ExecutiveDirector(Guid id, string firstName, string lastName, int age, string position, decimal salary)
+    {
+        Id = id;
+        FirstName = firstName;
+        LastName = lastName;
+        Age = age;
+        Position = position;
+        Salary = salary;
+    }
+
+
+    public void Control()
+    {
+        Console.WriteLine("CEO is in control.");
+    }
+
+    public void Organize()
+    {
+        Console.WriteLine("CEO is organizing.");
+    }
+
+    public void MakeMeeting()
+    {
+        Console.WriteLine("CEO is making a meeting.");
+    }
+
+    public void DecreasePercentage(decimal percent)
+    {
+        Console.WriteLine($"CEO is reducing percentage by {percent}%.");
+    }
+
+}
+
+
+
+
+public class Employee : IBankEntity
+{
+    public Guid Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+
+
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
+    public List<string> Operations { get; set; } = new List<string>();
+
+    public Employee(Guid id, string firstName, string lastName, int age, string position, decimal salary)
+    {
+        Id = id;
+        FirstName = firstName;
+        LastName = lastName;
+        Age = age;
+        Position = position;
+        Salary = salary;
+    }
+
+    public void AddOperation(string operation)
+    {
+        Operations.Add(operation);
+    }
+
+}
+
+
+
+
+public class Manager : IBankEntity
+{
+    public Guid Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+
+    public Manager(Guid id, string firstName, string lastName, int age, string position, decimal salary)
+    {
+        Id = id;
+        FirstName = firstName;
+        LastName = lastName;
+        Age = age;
+        Position = position;
+        Salary = salary;
+    }
+
+    public void Organize()
+    {
+        Console.WriteLine("Manager is organizing.");
+    }
+
+    public decimal CalculateSalaries(List<IBankEntity> employees)
+    {
+        decimal totalSalaries = 0;
+        foreach (var employee in employees)
+        {
+            totalSalaries += employee.Salary;
+        }
+
+        Console.WriteLine($"Total salaries calculated by the manager: {totalSalaries}");
+        return totalSalaries;
+    }
+
+}
+
+
+
+
+public class Transaction
+{
+    public string ProcessName { get; set; }
+    public DateTime DateTime { get; set; }
+
+    public Transaction(string processName, DateTime dateTime)
+    {
+        ProcessName = processName;
+        DateTime = dateTime;
+    }
+
+}
+
+
+
+public class Loan
+{
+    public Customer Customer { get; set; }
+    public decimal Amount { get; set; }
+    public decimal Percent { get; set; }
+    public int Months { get; set; }
+    public object InterestRate { get; internal set; }
+
+    public Loan(Customer customer, decimal amount, decimal interest, int months)
+    {
+        Customer = customer;
+        Amount = amount;
+        Percent = interest;
+        Months = months;
+    }
+
+    public decimal CalculatePercent()
+    {
+        decimal totalPercent = (Amount * Percent * Months) / 12;
+        return totalPercent;
+    }
+
+    public void MakePayment(decimal paymentAmount)
+    {
+        if (paymentAmount <= 0)
+        {
+            Console.WriteLine("Payment amount must be greater than zero.");
+            return;
+        }
+
+        if (paymentAmount > Amount)
+        {
+            Console.WriteLine("Payment amount exceeds the remaining loan balance.");
+            return;
+        }
+
+        Amount -= paymentAmount;
+        Console.WriteLine($"Payment of {paymentAmount:C} received. Remaining balance: {Amount:C}");
+    }
+
+
+}
+
+
+
+
+public class Bank
+{
+    public string Name { get; set; }
+    public decimal Budget { get; set; }
+    public decimal Profit { get; set; }
+    public ExecutiveDirector CEO { get; set; }
+    public List<Employee> Workers { get; set; } = new List<Employee>();
+    public List<Manager> Managers { get; set; } = new List<Manager>();
+    public List<Customer> Clients { get; set; } = new List<Customer>();
+    public List<Loan> Loans { get; set; } = new List<Loan>();
+
+    public Bank(string name, decimal budget)
+    {
+        Name = name;
+        Budget = budget;
+    }
+
+    public void CalculateProfit()
+    {
+        
+        decimal profitPercentage = 0.05m; 
+        Profit = Budget * profitPercentage;
+    }
+
+    public void ShowClientCredit(string fullName)
+    {
+        
+        Customer client = Clients.Find(c => c.FullName == fullName);
+
+        if (client != null)
+        {
+            Console.WriteLine($"Client: {client.FullName}");
+            foreach (Loan loan in Loans)
+            {
+                if (loan.Customer == client)
+                {
+                    Console.WriteLine($"Loan: Amount = {loan.Amount:C}, Interest Rate = {loan.InterestRate}%, Months = {loan.Months}");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Client with full name '{fullName}' not found.");
+        }
+    }
+
+    public void PayCredit(Customer client, decimal money)
+    {
+        
+        if (Clients.Contains(client))
+        {
+           
+            foreach (Loan loan in Loans)
+            {
+                if (loan.Customer == client)
+                {
+                    if (money >= loan.Amount)
+                    {
+                        client.DeductLoan(loan.Amount);
+                        Loans.Remove(loan);
+                        Console.WriteLine($"Loan paid off for {client.FullName}. Remaining balance: {client.LoanBalance:C}");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Payment of {money:C} made for {client.FullName}. Remaining balance: {client.LoanBalance:C}");
+                        return;
+                    }
+                }
+            }
+            Console.WriteLine($"No active loan found for {client.FullName}.");
+        }
+        else
+        {
+            Console.WriteLine($"Client '{client.FullName}' not found.");
+        }
+    }
+
+    public void ShowAllCredit()
+    {
+        Console.WriteLine("All Active Loans:");
+
+        foreach (Loan loan in Loans)
+        {
+            Console.WriteLine($"Client: {loan.Customer.FullName}, Loan Amount: {loan.Amount:C}, Interest Rate: {loan.InterestRate}%, Months: {loan.Months}");
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        
+        Bank myBank = new Bank("My Bank", 1000000);
+
+       
+        ExecutiveDirector ceo = new ExecutiveDirector(Guid.NewGuid(), "Eli", "Hemzeyev", 45, "CEO", 1500000);
+        myBank.CEO = ceo;
+
+        Employee emp1 = new Employee(Guid.NewGuid(), "Hezret", "Hemzeyev", 30, "Employee", 60000);
+        Employee emp2 = new Employee(Guid.NewGuid(), "Fariz", "Osmanov", 28, "Employee", 55000);
+        myBank.Workers.Add(emp1);
+        myBank.Workers.Add(emp2);
+
+        Manager manager1 = new Manager(Guid.NewGuid(), "Mehemmed", "Hemzeyev", 35, "Manager", 80000);
+        Manager manager2 = new Manager(Guid.NewGuid(), "Samir", "Osmanov", 40, "Manager", 90000);
+        myBank.Managers.Add(manager1);
+        myBank.Managers.Add(manager2);
+
+        Customer client1 = new Customer(Guid.NewGuid(), "Rubail", "Rehmanli", 28, "Client", 50000, "123 Main St", "456 Work St");
+        Customer client2 = new Customer(Guid.NewGuid(), "Pervin", "Agayev", 35, "Client", 55000, "789 Elm St", "1010 Office Ave");
+        myBank.Clients.Add(client1);
+        myBank.Clients.Add(client2);
+
+        Loan loan1 = new Loan(client1, 10000, 5, 12);
+        Loan loan2 = new Loan(client2, 20000, 6, 24);
+        myBank.Loans.Add(loan1);
+        myBank.Loans.Add(loan2);
+
+        myBank.CalculateProfit();
+        Console.WriteLine($"Profit for {myBank.Name}: {myBank.Profit:C}");
+
+        myBank.ShowClientCredit("Eve Wilson");
+
+        myBank.PayCredit(client2, 10000);
+
+        myBank.ShowAllCredit();
+    }
+}
+
+
+
